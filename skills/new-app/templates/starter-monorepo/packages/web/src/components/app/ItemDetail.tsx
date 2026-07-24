@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 
-const STATUS_VARIANT: Record<Item["status"], BadgeProps["variant"]> = {
+// Read with  below: a status added server-side later must not render an
+// undefined variant. Never index a status map without a fallback.
+const STATUS_VARIANT: Record<string, BadgeProps["variant"]> = {
   done: "positive",
   failed: "critical",
   processing: "active",
@@ -59,7 +61,7 @@ export function ItemDetail({ id }: { id: string }) {
     <div className="max-w-2xl space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">{item.title}</h2>
-        <Badge variant={STATUS_VARIANT[item.status]}>{item.status}</Badge>
+        <Badge variant={STATUS_VARIANT[item.status] ?? "secondary"}>{item.status}</Badge>
       </div>
 
       {running && (

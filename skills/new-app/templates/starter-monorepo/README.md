@@ -164,12 +164,24 @@ wrangler queues create myapp-jobs && wrangler queues create myapp-dlq
 
 cd packages/api && wrangler deploy
 cd ../queue     && wrangler deploy
-cd ../web       && pnpm build && wrangler deploy
+
+# Web: wrangler refuses to upload _worker.js as a static asset, so exclude it first
+cd ../web && pnpm build
+printf "_worker.js\n_routes.json\n" > dist/.assetsignore
+wrangler deploy
 ```
+
+Before the first web deploy, set `PROD_API_ORIGIN` in `src/lib/api.ts` to your API's real origin.
+It is deliberately hardcoded: `PUBLIC_*` env vars are inlined at build time and are often missing
+at runtime on Workers, and the fallback is what stops server-rendered links pointing nowhere.
 
 Secrets (Google sign-in, payment keys) never go in config files — use
 `wrangler secret put GOOGLE_CLIENT_ID` and friends. Copy `.dev.vars.example` to
 `packages/api/.dev.vars` for local development.
+
+For Google sign-in, register the callback under **Authorized redirect URIs** (not "Authorized
+JavaScript origins", which does nothing here), once per environment:
+`https://api.yourdomain.com/api/v1/auth/google/callback` and the localhost equivalent.
 
 ---
 

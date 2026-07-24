@@ -5,7 +5,9 @@ import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { parseTimestamp } from "@/lib/date";
 
-const STATUS_VARIANT: Record<Item["status"], BadgeProps["variant"]> = {
+// Read with  below: a status added server-side later must not render an
+// undefined variant. Never index a status map without a fallback.
+const STATUS_VARIANT: Record<string, BadgeProps["variant"]> = {
   done: "positive",
   failed: "critical",
   processing: "active",
@@ -59,7 +61,7 @@ export function Dashboard() {
                   <div className="font-medium">{i.title}</div>
                   <div className="text-xs text-text-tertiary">{parseTimestamp(i.createdAt)?.toLocaleString()}</div>
                 </div>
-                <Badge variant={STATUS_VARIANT[i.status]}>{i.status}</Badge>
+                <Badge variant={STATUS_VARIANT[i.status] ?? "secondary"}>{i.status}</Badge>
               </Card>
             </a>
           ))}

@@ -31,6 +31,7 @@ export function AppNav({
         aria-label="Open menu"
         aria-expanded={open}
         className="fixed left-2.5 top-2.5 z-30 flex h-9 w-9 items-center justify-center rounded-md border border-border bg-card text-text-primary md:hidden"
+        style={{ marginTop: "env(safe-area-inset-top)", marginLeft: "env(safe-area-inset-left)" }}
       >
         <Menu size={19} strokeWidth={1.9} />
       </button>
@@ -49,6 +50,7 @@ export function AppNav({
           "fixed inset-y-0 left-0 z-50 flex w-[248px] shrink-0 flex-col bg-sidebar text-sidebar-foreground transition-transform duration-200 md:static md:translate-x-0",
           open ? "translate-x-0" : "-translate-x-full md:translate-x-0",
         )}
+        style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <div className="flex h-14 items-center justify-between px-5">
           <a href="/dashboard" className="text-base font-semibold">

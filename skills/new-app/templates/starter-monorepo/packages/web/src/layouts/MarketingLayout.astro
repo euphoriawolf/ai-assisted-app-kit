@@ -5,28 +5,62 @@ import { FEATURES } from "@app/shared/constants";
 interface Props {
   title?: string;
   description?: string;
+  /** Absolute URL of the social share image. Falls back to /og-default.png. */
+  image?: string;
+  noindex?: boolean;
 }
-const { title = "Starter App", description = "A starter app built on the Cloudflare stack." } = Astro.props;
+const {
+  title = "Starter App",
+  description = "A starter app built on the Cloudflare stack.",
+  image,
+  noindex = false,
+} = Astro.props;
+
+// Canonical URL. Astro.site comes from `site` in astro.config; fall back to the request origin.
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).toString();
+const ogImage = new URL(image ?? "/og-default.png", Astro.site ?? Astro.url.origin).toString();
+
+// Dev-only budget warnings. Search engines truncate past these, and it is far cheaper to notice
+// while writing the page than in a crawl report months later.
+if (import.meta.env.DEV && title.length > 60) {
+  console.warn(`[seo] title is ${title.length} chars (>60, will truncate): ${title}`);
+}
+if (import.meta.env.DEV && (description.length < 120 || description.length > 165)) {
+  console.warn(`[seo] description is ${description.length} chars (aim 120-165): ${Astro.url.pathname}`);
+}
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
   </head>
   <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
     <header class="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
       <a href="/" class="text-base font-semibold">Starter App</a>
-      <nav class="flex items-center gap-4 text-sm">
+      <nav class="flex items-center gap-4 text-sm" aria-label="Main">
         {FEATURES.billing.enabled && <a href="/#pricing" class="text-text-secondary hover:text-text-primary">Pricing</a>}
         <a href="/login" class="rounded-md bg-primary px-3 py-1.5 text-primary-foreground">Sign in</a>
       </nav>
     </header>
-    <main>
+    <main id="main-content">
       <slot />
     </main>
     <footer class="mx-auto max-w-5xl px-6 py-10 text-sm text-text-tertiary">

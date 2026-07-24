@@ -1,15 +1,26 @@
 // Typed API client. Base URL comes from PUBLIC_API_BASE_URL (Astro env).
 //   Dev (browser): "" -> the Vite dev proxy forwards /api -> :8787 (same-origin, no CORS).
 //   Dev (SSR):     absolute http://localhost:8787 (server-to-server needs an absolute URL).
-//   Prod:          the absolute API origin (api.example.com) in BOTH browser and SSR, so
-//                  server-rendered links (e.g. the Google sign-in button) match the client.
+//   Prod:          the absolute API origin in BOTH browser and SSR, so server-rendered links
+//                  (e.g. the Google sign-in button) match what the client would build.
 // All requests send credentials so the session cookie flows transparently.
+//
+// ⚠️ PROD_API_ORIGIN must be hardcoded, not read only from env. `import.meta.env.PUBLIC_*` is
+// inlined AT BUILD TIME and is frequently `undefined` at runtime on Workers (no .env file present
+// during the build). Falling back to "" makes every server-rendered absolute link relative, so it
+// 404s against the web origin. This bites hardest on mobile, where users tap the pre-hydration
+// link before client JS can rewrite it. SET THIS during scaffold.
+const PROD_API_ORIGIN = "https://api.example.com";
+
 const API_ORIGIN = import.meta.env?.PUBLIC_API_BASE_URL || "";
 const BASE_URL = (() => {
   if (API_ORIGIN) return API_ORIGIN;
   if (import.meta.env?.DEV) return typeof window === "undefined" ? "http://localhost:8787" : "";
-  return "";
+  return PROD_API_ORIGIN;
 })();
+
+// Absolute base for server-to-server calls (SSR middleware -> API worker). Never relative.
+export const SERVER_API_BASE = BASE_URL || PROD_API_ORIGIN;
 
 // Absolute base for URLs the BROWSER navigates to directly (OAuth start, checkout), which can't
 // go through the Vite dev proxy. Use this for <a href> and window.location, NOT apiFetch. Getting

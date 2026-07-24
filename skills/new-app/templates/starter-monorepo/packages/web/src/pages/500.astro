@@ -1,0 +1,14 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Something went wrong">
+  <main id="main-content" class="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center px-6 text-center">
+    <p class="font-mono text-sm text-text-tertiary">500</p>
+    <h1 class="mt-2 text-2xl font-bold">Something went wrong on our side</h1>
+    <p class="mt-2 text-text-secondary">
+      This one is on us. Try again in a moment.
+    </p>
+    <a href="/" class="mt-6 rounded-md bg-primary px-5 py-2.5 text-primary-foreground">Go home</a>
+  </main>
+</BaseLayout>

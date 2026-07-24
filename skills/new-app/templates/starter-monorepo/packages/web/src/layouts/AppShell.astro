@@ -27,26 +27,37 @@ const nav = [
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title}</title>
     <ClientRouter />
   </head>
-  <body>
-    <div class="flex min-h-screen">
-      <AppNav items={nav} active={active} appName="Starter App" client:load />
+  <!--
+    Shell layout: 100dvh (not 100vh — mobile browser chrome makes vh taller than the visible
+    area) with overflow hidden, so ONLY <main> scrolls and the sidebar/topbar stay fixed.
+  -->
+  <body class="flex h-[100dvh] overflow-hidden bg-surface-page">
+    <AppNav items={nav} active={active} appName="Starter App" client:load />
 
-      <div class="flex min-w-0 flex-1 flex-col">
-        {/* Left padding on mobile clears the floating hamburger; normal spacing on md+. */}
-        <header class="flex h-14 items-center justify-between border-b border-border pl-[58px] pr-6 md:pl-6">
-          <h1 class="text-sm font-medium">{title}</h1>
-          <UserMenu client:load />
-        </header>
-        <main class="flex-1 bg-surface-page p-6">
-          <slot />
-        </main>
-      </div>
+    <!-- min-w-0 is load-bearing: without it a wide child refuses to shrink and blows out the sidebar. -->
+    <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <!-- Left padding on mobile clears the floating hamburger; normal spacing on md+. -->
+      <header class="flex h-14 shrink-0 items-center justify-between border-b border-border pl-[58px] pr-6 md:pl-6">
+        <h1 class="truncate text-sm font-medium">{title}</h1>
+        <UserMenu client:load />
+      </header>
+      <main id="main-content" class="flex-1 overflow-y-auto p-6">
+        <slot />
+      </main>
     </div>
-    <Toaster client:load />
+
+    <!--
+      display:contents so the astro-island wrapper never becomes a flex child of body.
+      Sonner applies position:fixed at runtime; in the window before that lands, an island that
+      IS a flex item steals horizontal space and shoves the layout sideways.
+    -->
+    <div style="display:contents;">
+      <Toaster client:load />
+    </div>
   </body>
 </html>
