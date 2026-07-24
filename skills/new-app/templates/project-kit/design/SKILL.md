@@ -21,7 +21,7 @@ Hybrid **shadcn/ui themed by DS tokens**:
 - **Bespoke product components:** `packages/web/src/components/ds/*` — hand-built, token-driven.
 - **App shell:** `packages/web/src/layouts/AppShell.astro`.
 
-## This app's brand (fill during bootstrap)
+## This app's brand
 
 - **One-line look:** {{BRAND_LOOK}}
 - **Primary/accent:** `--primary` = {{PRIMARY_TOKEN}}

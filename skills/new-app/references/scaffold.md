@@ -54,6 +54,24 @@ a digit; if the brand does, prefix or spell it out, e.g. `4sight` → `foursight
    `report`, `track`), rename `items`→that now (schema table, api route, queue job, web page). If
    unsure, leave `items` as the worked example and let the build add the real object in Phase 1.
 
+   Renaming touches ~66 files, so script it — but three traps, all hit in a real run:
+
+   - **Replace CASE-SENSITIVELY.** A case-insensitive `item` → `clip` corrupts
+     `InviteMemberSchema`, which contains `Inv·iteM·ember`. Do `items→clips`, `Items→Clips`,
+     `item→clip`, `Item→Clip` as separate case-sensitive passes (plural first, or `items` becomes
+     `clips` via `item`→`clip` + a stray `s`). Sanity-check first with
+     `grep -rhoE '[A-Za-z_]*[Ii]tem[A-Za-z_]*' . | sort -u` and eyeball every match.
+   - **Leave generic uses alone.** `PaginatedResult<T> { items: T[] }` in
+     `packages/shared/src/types/api.ts` is a generic container, not your domain object. Exclude
+     that file, or your generic pagination type ends up saying `clips`.
+   - **Fix article agreement afterwards.** "an item" becomes "an clip". Sweep with
+     `grep -rn "an <newword>"` and correct to "a". Same for any "a items" leftovers.
+
+   Rename files and directories too (`schema/items.ts`, `types/item.ts`, `routes/items.ts`,
+   `components/app/{NewItemForm,ItemDetail}.tsx`, `pages/dashboard/items/`). Use plain `mv` — `git
+   mv` fails because nothing is committed yet. Then re-run `pnpm db:generate` so the migration
+   creates the renamed table, and typecheck.
+
 5. **Prune opted-out modules** per `references/modules.md`.
 
 6. **Reskin** per `references/theme.md`.
@@ -86,6 +104,15 @@ Confirm, using the preview browser tools (not by asking the user):
 ## Common boot failures
 - Jobs stuck at `pending` → API and queue are not sharing one Miniflare; check the `dev` script
   runs `wrangler dev -c api -c queue`.
-- `no such column` on first query → migrations weren't generated/applied; `pnpm db:generate`, and
-  confirm `scripts/sync-migrations.mjs` copied them into `packages/api/migrations`.
+- `no such column` / empty tables on first query → migrations weren't **applied** to the local D1.
+  `pnpm db:generate` only writes them; apply with
+  `wrangler d1 migrations apply <slug> --local --persist-to .wrangler/state` from `packages/api`.
 - Wrangler hangs with no output → wrong Node; `nvm use 22`.
+- **React islands never hydrate; console shows "Failed to fetch dynamically imported module" and
+  the network tab shows `504 (Outdated Optimize Dep)`** → Vite's pre-bundled dependency cache went
+  stale, which happens when edits introduce a new workspace import mid-session. It is not a code
+  bug. Stop the web dev server, `rm -rf packages/web/node_modules/.vite`, restart, and hard-reload.
+- Wiping the local D1 while the dev server is running leaves the worker attached to the deleted
+  file, so writes vanish silently. Restart the server after any `rm -rf .wrangler/state/v3/d1`.
+- The browser console keeps showing errors after a fix → that buffer is historical. Trust a fresh
+  network trace and what actually renders, not old console lines.

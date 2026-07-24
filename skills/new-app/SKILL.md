@@ -53,16 +53,33 @@ Do these in order. Load the referenced file only when you reach that step — ke
    from `references/gotchas.md`. For `BRAND.md`, you may invoke the user's `brand-identity` /
    `copywriting-tone-of-voice-creator` skills for depth; keep the two-non-negotiables structure.
 
-6. **Install the project kit.** Copy `templates/project-kit/*` into `<app>/.claude/skills/` and
-   fill placeholders (`{{APP_NAME}}`, `{{APP_SLUG}}`, token values, the generated phase list).
+6. **Rewrite the app's own copy. DO NOT SKIP — the starter ships placeholder copy that describes
+   *the starter*, and shipping it makes the new app advertise the wrong product.** Right after
+   `BRAND.md` exists, sweep the UI and rewrite every user-visible string in the new app's voice:
+   - `pages/index.astro` — hero headline, subcopy, and any feature blurbs (ships as "Ship your idea
+     on the edge / A production starter on the Cloudflare stack")
+   - `layouts/BaseLayout.astro` + `layouts/MarketingLayout.astro` — the default `description`
+   - `components/app/Dashboard.tsx` — the empty state and the list heading
+   - `components/app/New<Resource>Form.tsx` — the helper text under the button
+   - any remaining mention of "the example job", "example resource", or "starter"
+   Verify with: `grep -rniE "starter|example job|example resource|cloudflare stack" packages/web/src`
+   (excluding `styles/`). Run the result past `BRAND.md`'s pre-publish checklist.
 
-7. **Verify boot.** Follow `references/scaffold.md` §Verify: `nvm use 22 && pnpm install &&
-   pnpm dev`; confirm API+queue (:8787) and web (:4321) boot, the example `items` resource
-   round-trips the queue, and a magic-link login issues a session. Report what booted.
+7. **Install the project kit.** Copy the relevant `templates/project-kit/*` skills into
+   `<app>/.claude/skills/` and fill EVERY placeholder (`{{APP_NAME}}`, `{{APP_SLUG}}`,
+   `{{PRIMARY_TOKEN}}`, `{{FONT_SANS}}`/`{{FONT_MONO}}`, `{{BRAND_LOOK}}`,
+   `{{BRAND_PERSONALITY}}`, `{{NON_NEGOTIABLE_1}}`/`{{NON_NEGOTIABLE_2}}`). Confirm with
+   `grep -rho '{{[A-Z_]*}}' .claude/skills` returning nothing. **Only install `seo-loop` if the
+   marketing module is kept** — it is useless without a marketing site.
 
-8. **Hand off.** Tell the user the repo is ready, point them at `TODO.md` Phase 1, and remind
-   them the per-app skills (`/design`, `/brand-voice`, `/build-phase`, `/seo-loop`) are now
-   installed in the repo.
+8. **Verify boot.** Follow `references/scaffold.md` §Verify: `nvm use 22 && pnpm install &&
+   pnpm db:generate && pnpm dev`; confirm API+queue and web boot, the core resource round-trips
+   the queue to `done`, the artifact downloads from R2, and a magic-link login issues a session.
+   Typecheck every package and run `astro check`. Report what actually booted, not what should.
+
+9. **Hand off.** Tell the user the repo is ready, point them at `TODO.md` Phase 1, and remind
+   them which per-app skills are installed (`/design`, `/brand-voice`, `/build-phase`, and
+   `/seo-loop` if marketing was kept).
 
 ## Principles baked into every app (state these; they drive the build)
 
