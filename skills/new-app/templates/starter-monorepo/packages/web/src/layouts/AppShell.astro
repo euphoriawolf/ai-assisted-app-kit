@@ -1,5 +1,10 @@
 ---
 import "@/styles/globals.css";
+// ClientRouter swaps pages client-side instead of doing a full browser reload, so the shell
+// (sidebar, topbar) stays put and navigation feels instant. Without it every link click
+// re-renders the whole page. Astro 4 called this <ViewTransitions />.
+import { ClientRouter } from "astro:transitions";
+import { AppNav } from "@/components/app/AppNav";
 import { UserMenu } from "@/components/app/UserMenu";
 import { Toaster } from "@/components/ui/sonner";
 import { FEATURES } from "@app/shared/constants";
@@ -23,32 +28,17 @@ const nav = [
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title}</title>
+    <ClientRouter />
   </head>
   <body>
     <div class="flex min-h-screen">
-      <aside class="hidden w-[248px] shrink-0 flex-col bg-sidebar text-sidebar-foreground md:flex">
-        <a href="/dashboard" class="flex h-14 items-center px-5 text-base font-semibold">Starter App</a>
-        <nav class="flex-1 space-y-1 px-3">
-          {
-            nav.map((n) => (
-              <a
-                href={n.href}
-                class={`block rounded-md px-3 py-2 text-sm transition-colors ${
-                  active === n.key
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                    : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                }`}
-              >
-                {n.label}
-              </a>
-            ))
-          }
-        </nav>
-      </aside>
+      <AppNav items={nav} active={active} appName="Starter App" client:load />
 
       <div class="flex min-w-0 flex-1 flex-col">
-        <header class="flex h-14 items-center justify-between border-b border-border px-6">
+        {/* Left padding on mobile clears the floating hamburger; normal spacing on md+. */}
+        <header class="flex h-14 items-center justify-between border-b border-border pl-[58px] pr-6 md:pl-6">
           <h1 class="text-sm font-medium">{title}</h1>
           <UserMenu client:load />
         </header>
