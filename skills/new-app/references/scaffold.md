@@ -54,8 +54,26 @@ a digit; if the brand does, prefix or spell it out, e.g. `4sight` → `foursight
    `report`, `track`), rename `items`→that now (schema table, api route, queue job, web page). If
    unsure, leave `items` as the worked example and let the build add the real object in Phase 1.
 
-   Renaming touches ~66 files, so script it — but three traps, all hit in a real run:
+   Renaming touches ~66 files, so script it — but four traps, all hit in a real run:
 
+   - **🚨 NEVER let the rename touch Tailwind utility classes.** This is the worst one. A blanket
+     `items` → `clips` rewrites `items-center` into `clips-center`, which Tailwind does not
+     generate. Every flex alignment in the app silently dies — buttons, the sidebar, the topbar,
+     cards, badges. **`tsc` and `astro check` both pass**, so nothing warns you; it is only visible
+     in a browser. Affected utilities: `items-center|items-start|items-end|items-baseline|
+     items-stretch`, plus `place-items-*` and `justify-items-*`.
+     Always run this restore pass immediately after renaming, then confirm it is zero:
+     ```bash
+     # <new> is your new resource word, e.g. clips
+     grep -rlE "\b<new>-(center|start|end|baseline|stretch)\b" packages/web/src | while read f; do
+       python3 - "$f" <<'PY'
+     import sys, re
+     p=sys.argv[1]; s=open(p).read()
+     open(p,'w').write(re.sub(r'\b<new>-(center|start|end|baseline|stretch)\b', r'items-\1', s))
+     PY
+     done
+     grep -rhoE "\b<new>-(center|start|end|baseline|stretch)\b" packages/web/src | wc -l   # must be 0
+     ```
    - **Replace CASE-SENSITIVELY.** A case-insensitive `item` → `clip` corrupts
      `InviteMemberSchema`, which contains `Inv·iteM·ember`. Do `items→clips`, `Items→Clips`,
      `item→clip`, `Item→Clip` as separate case-sensitive passes (plural first, or `items` becomes

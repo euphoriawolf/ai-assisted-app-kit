@@ -77,6 +77,12 @@ Do these in order. Load the referenced file only when you reach that step — ke
    the queue to `done`, the artifact downloads from R2, and a magic-link login issues a session.
    Typecheck every package and run `astro check`. Report what actually booted, not what should.
 
+   **A green typecheck is NOT enough — you must LOOK at the running UI.** Broken Tailwind classes
+   (see the rename traps in `scaffold.md`) pass `tsc` and `astro check` and still destroy the
+   layout. Open the dashboard and the landing page, screenshot both, and check that buttons,
+   the sidebar, and the topbar are actually aligned and styled. If a control renders as bare
+   unstyled text, suspect a corrupted utility class before anything else.
+
 9. **Hand off.** Tell the user the repo is ready, point them at `TODO.md` Phase 1, and remind
    them which per-app skills are installed (`/design`, `/brand-voice`, `/build-phase`, and
    `/seo-loop` if marketing was kept).
