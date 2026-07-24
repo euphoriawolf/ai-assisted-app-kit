@@ -1,0 +1,25 @@
+node_modules/
+dist/
+.wrangler/
+*.local
+.dev.vars
+.env
+.env.*
+!.env.example
+!.dev.vars.example
+# Live Polar credentials — never commit
+.polar.live.env
+*.polar.live.env
+
+# SEO loop credentials + generated snapshots — never commit
+.seo.env
+*.seo.env
+scripts/seo/snapshots/
+*service-account*.json
+*.gserviceaccount.json
+*.tsbuildinfo
+.turbo/
+.cache/
+
+# Astro generated
+.astro/

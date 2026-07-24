@@ -1,201 +1,178 @@
-# Starter App
+# AI-Assisted App Kit
 
-A production-ready starter for building web apps on **Cloudflare's edge**. It gives you the boring-
-but-essential 80% of a real product — sign-in, a database, background jobs, a design system, and
-optional payments — so you can start on the part that's actually yours.
+A kit for building real web apps **with an AI coding agent**, not just a template you copy.
 
-It boots and runs **with no API keys and no accounts**. Clone it, `pnpm dev`, sign in, create
-something, watch a background job process it.
+It has two halves that work together:
+
+1. **Skills** — instructions that teach [Claude Code](https://claude.com/claude-code) how to
+   bootstrap and grow an app: interview you about the idea, scaffold it, write its documentation,
+   and install a set of per-project skills that keep working for the life of the app.
+2. **A starter** — a production Cloudflare stack (auth, database, background jobs, design system)
+   that the skills build from, so the agent starts from working code instead of a blank page.
+
+The result: you describe an app, and you get a running one, with the conventions and the hard-won
+gotchas already baked in.
 
 ---
 
-## What you get
+## Why this exists
+
+Most "AI builds your app" attempts fail the same way. The agent starts from nothing, invents a
+different architecture every time, forgets the decisions you made two hours ago, and produces
+something that demos well and can't be maintained.
+
+This kit fixes those three problems directly:
+
+- **It starts from working code.** The agent customizes a stack that already boots, so it spends
+  its effort on your idea instead of re-deriving auth and queues.
+- **It writes down decisions.** Every generated app keeps living docs (`CLAUDE.md`, `BRAND.md`,
+  `TODO.md`) that the agent maintains as the app changes. These survive context resets — the next
+  session picks up knowing the architecture, the voice, and what's left to build.
+- **It ships the lessons.** The starter encodes gotchas that cost real debugging time: timezone-safe
+  timestamps, cross-origin cookie rules, queue retry and dead-letter handling, a Tailwind cascade
+  trap. You inherit the fixes instead of rediscovering the bugs.
+
+It was extracted from a real, shipped SaaS. Everything here earned its place in production.
+
+---
+
+## Install
+
+Requires [Claude Code](https://claude.com/claude-code).
+
+```bash
+git clone https://github.com/euphoriawolf/ai-assisted-app-kit.git
+ln -s "$(pwd)/ai-assisted-app-kit/skills/new-app" ~/.claude/skills/new-app
+```
+
+That's it. The symlink means editing the repo updates the skill you use — one source of truth.
+
+---
+
+## Use it
+
+In Claude Code, run:
+
+```
+/new-app
+```
+
+The agent will:
+
+1. **Interview you** briefly — what the app is, who it's for, the one core thing users create, and
+   whether you need optional pieces like usage metering or payments. It asks rather than assuming.
+2. **Scaffold** the monorepo, renamed and rewired for your app.
+3. **Prune** whatever you said you don't need.
+4. **Apply your brand** — colors and fonts into the design tokens.
+5. **Write the living docs** — `CLAUDE.md` (architecture + conventions), `BRAND.md` (voice),
+   `TODO.md` (a phased build plan for your idea).
+6. **Install per-project skills** into your new repo (below).
+7. **Boot it** and confirm sign-in and the background job actually work before handing over.
+
+You end up with a running app and a plan for finishing it.
+
+---
+
+## What your generated app gets
+
+Four skills are installed into your new repo at `.claude/skills/`, pre-filled with *your* app's
+name, design tokens, and phase plan. They're committed with the code, so they travel with the
+project and work for anyone who clones it.
+
+| Skill | What it does |
+|---|---|
+| `/design` | Builds UI using your app's design tokens, so everything stays visually consistent |
+| `/brand-voice` | Writes and reviews customer-facing copy against your `BRAND.md` |
+| `/build-phase` | Picks the next task from `TODO.md`, implements it, verifies it, checks it off |
+| `/seo-loop` | Runs a measure → improve → deploy loop for organic traffic |
+
+Plus the living docs the agent maintains as you go:
+
+- **`CLAUDE.md`** — the project brain: architecture, conventions, and gotchas. Kept current as the
+  app evolves. (`AGENTS.md` is a byte-identical mirror for other agent tools.)
+- **`BRAND.md`** — how the product sounds, everywhere.
+- **`TODO.md`** — the phased build ledger, checked off as work lands.
+
+---
+
+## What's in the starter
+
+The stack the agent builds from. It boots with **no API keys and no accounts**.
 
 | | |
 |---|---|
-| **Sign-in that works** | Google sign-in **and** passwordless magic links. Sessions in a cookie, cached at the edge. |
+| **Sign-in that works** | Google sign-in and passwordless magic links. Sessions in a cookie, cached at the edge. |
 | **A database** | Cloudflare D1 (SQLite) with [Drizzle ORM](https://orm.drizzle.team). 14 tables covering users, teams, files, and billing. Migrations included. |
-| **Background jobs** | A Cloudflare Queue that runs multi-step work reliably, with automatic retries, a dead-letter queue, and clean failure handling. |
-| **A frontend** | [Astro](https://astro.build) with server-side rendering, React islands, and [shadcn/ui](https://ui.shadcn.com) components. |
-| **A design system** | Design tokens (color, type, spacing, shadows) that every component reads from. Rebrand the whole app by editing three files. |
-| **File storage** | Cloudflare R2, with a ready-made upload + download path. |
-| **Payments (optional)** | Off by default. Provider-agnostic — bring Stripe, Polar, Paddle, or a local processor. |
-| **Credits (optional)** | Off by default. A usage-metering layer if your app needs one. |
+| **Background jobs** | A Cloudflare Queue that runs multi-step work reliably, with retries, backoff, and a dead-letter queue that's actually monitored. |
+| **A frontend** | [Astro](https://astro.build) SSR with React islands and [shadcn/ui](https://ui.shadcn.com). |
+| **A design system** | Design tokens every component reads from. Rebrand the whole app by editing three files. |
+| **File storage** | Cloudflare R2, with upload and download paths wired up. |
+| **Payments** | Off by default. Provider-agnostic — bring Stripe, Polar, Paddle, or a local processor. |
+| **Usage metering** | Off by default. A credits layer if your app needs one. |
 
-Everything runs on Cloudflare Workers, so it's fast everywhere and cheap to host.
+It runs on Cloudflare Workers, so it's fast everywhere and cheap to host.
+
+**Nothing about a business model is assumed.** Credits and payments are opt-in flags. The base app
+works with neither, because most apps start that way, and because payment providers differ by
+country — so billing sits behind an adapter you can swap.
 
 ---
 
-## The 60-second version
+## Using the starter without Claude Code
+
+The stack is just code. Copy it and run it:
 
 ```bash
-git clone https://github.com/euphoriawolf/app-factory-starter.git myapp && cd myapp
+git clone https://github.com/euphoriawolf/ai-assisted-app-kit.git
+cp -R ai-assisted-app-kit/skills/new-app/templates/starter-monorepo myapp && cd myapp
+
 nvm use 22          # Node 22 required
 pnpm install
-pnpm db:generate    # create the database migration
+pnpm db:generate
 pnpm dev            # API + jobs on :8787, web on :4321
 ```
 
-Open **http://localhost:4321**, click sign in, enter any email. **The magic-link sign-in URL is
-printed in your terminal** — no mailbox needed. Paste it in the browser and you're logged in.
+Open **http://localhost:4321**, sign in with any email — **the sign-in link is printed in your
+terminal**, no mailbox needed. Create an item and watch it move `pending → processing → done`.
+That's the background job pipeline running end to end.
 
-Then create an item and watch it move through `pending → processing → done` in real time. That's
-the background job pipeline running end to end.
-
----
-
-## How it fits together
-
-```
-Browser
-   │
-   ▼
-packages/web ......... Astro site + dashboard (the UI you see)
-   │  calls /api/v1/*
-   ▼
-packages/api ......... Hono API on Workers (auth, resources, files, payments)
-   │  puts a message on a queue
-   ▼
-packages/queue ....... Background worker (does slow work, retries, refunds on failure)
-   │
-   ▼
-D1 (database) · R2 (files) · KV (cache)
-```
-
-Two shared packages support them:
-
-- **`packages/shared`** — types, validation schemas, and config used by everything.
-- **`packages/db`** — the database schema and migrations.
-
-### The example feature
-
-The starter ships one worked example called **items** so nothing is theoretical. An "item" is
-created in the UI, saved to the database, handed to the background queue, processed in three steps,
-and the result is saved to file storage.
-
-**This is your template.** Rename `item` to whatever your app actually makes (a report, a video, an
-invoice, a design) and replace the processing step with your real work. The plumbing — auth,
-progress tracking, retries, storage — already works.
-
-The one place your real work goes is `packages/queue/src/processor.ts`. It currently writes a small
-JSON file. Swap in an AI model call, an API request, an image render, whatever your app does.
+Its own [README](skills/new-app/templates/starter-monorepo/README.md) covers renaming, rebranding,
+turning on payments, and deploying.
 
 ---
 
-## Making it yours
-
-### 1. Rename it
-
-The starter uses `starterapp` and `@app/` as placeholders. Find and replace them with your app's
-name across the repo, including in `wrangler.jsonc` files (the Cloudflare config).
-
-### 2. Rebrand it
-
-Everything visual comes from design tokens. Edit these three files and the entire app follows:
-
-- `packages/web/src/styles/ds/colors.css` — your colors (the app ships neutral grey)
-- `packages/web/src/styles/ds/typography.css` — your fonts (ships with system fonts, no downloads)
-- `packages/web/src/styles/ds/elevation.css` — corner rounding and shadows
-
-Components never hardcode a color. They read token names, so a rebrand touches no component code.
-
-### 3. Turn on what you need
-
-Open **`packages/shared/src/constants/features.ts`**. Everything optional lives there:
-
-```ts
-export const FEATURES = {
-  credits: { enabled: false, gateCreation: true, initialGrant: 0 },
-  billing: { enabled: false, provider: "none" },
-};
-```
-
-**Both are off by default, on purpose.** The app makes no assumption that you charge money or meter
-usage. Most apps start with neither.
-
-- **Credits** — turn on if you want to meter usage (each action costs credits). `initialGrant` gives
-  new users a free allowance.
-- **Billing** — turn on to sell those credits. Then pick a payment provider.
-
-### 4. Add a payment provider (only if you're charging)
-
-Payments sit behind a small adapter interface, so you're not locked into one company or country.
+## What's in this repo
 
 ```
-packages/api/src/billing/
-  base.ts       the interface (createCheckout + parseWebhook)
-  none.ts       the default: no payments
-  polar.ts      a complete working example
-  factory.ts    picks which one to use
+skills/new-app/
+├── SKILL.md              the /new-app flow the agent follows
+├── ROADMAP.md            what ships today, what's optional and not yet built
+├── references/           the methodology, loaded by the agent as needed
+│   ├── architecture.md     why the kit is shaped this way
+│   ├── scaffold.md         copy, rename, wire, verify
+│   ├── modules.md          optional modules and how to add or remove them
+│   ├── theme.md            design tokens and how to rebrand
+│   ├── docs-generation.md  how CLAUDE.md / BRAND.md / TODO.md get written
+│   └── gotchas.md          bugs that cost real time, and their fixes
+└── templates/
+    ├── project-kit/      the four skills installed into each new app
+    └── starter-monorepo/ the Cloudflare stack
 ```
-
-To use a different provider, copy `polar.ts` to `stripe.ts`, implement the same two methods against
-their API, and register it in `factory.ts`. Nothing else in the codebase changes — the rest of the
-app never learns which provider you use. Point the provider's webhook at
-`POST /api/v1/webhooks/billing`.
-
-Pricing has **one dial**: `CREDITS_PER_DOLLAR` in `packages/shared/src/constants/credits.ts`. Change
-it and everything reprices at once, because no price is ever stored anywhere else.
-
----
-
-## Commands
-
-| Command | What it does |
-|---|---|
-| `pnpm dev` | Run everything locally (API + jobs on :8787, web on :4321) |
-| `pnpm db:generate` | Create a migration after changing the database schema |
-| `pnpm typecheck` | Type-check every package |
-| `pnpm build` | Build for production |
-
----
-
-## Going live
-
-You'll need a free [Cloudflare account](https://dash.cloudflare.com). Create the resources, paste
-the IDs into the `wrangler.jsonc` files, and deploy:
-
-```bash
-wrangler d1 create myapp
-wrangler r2 bucket create myapp-assets
-wrangler kv namespace create SESSION_CACHE
-wrangler queues create myapp-jobs && wrangler queues create myapp-dlq
-
-cd packages/api && wrangler deploy
-cd ../queue     && wrangler deploy
-cd ../web       && pnpm build && wrangler deploy
-```
-
-Secrets (Google sign-in, payment keys) never go in config files — use
-`wrangler secret put GOOGLE_CLIENT_ID` and friends. Copy `.dev.vars.example` to
-`packages/api/.dev.vars` for local development.
-
----
-
-## Things that will bite you (learned the hard way)
-
-These are baked into the code already, but worth knowing before you change things:
-
-- **Node 22 is required.** Wrangler hangs silently on Node 20.
-- **The API and queue must run in one process locally.** `pnpm dev` handles this. If you run them
-  separately, jobs get queued and never picked up.
-- **Links the browser navigates to** (sign-in, checkout, downloads) must use `API_BASE` from
-  `lib/api.ts`. Regular `fetch` calls are fine. Get this wrong and it works locally but 404s in
-  production.
-- **Timestamps must carry a timezone.** SQLite's plain `datetime('now')` omits it and every date
-  renders hours off. The schema defaults are already fixed to write proper UTC; keep writing
-  `new Date().toISOString()` in code, and read dates through `parseTimestamp()`.
-- **CSS resets must stay inside `@layer base`.** Otherwise they silently override Tailwind classes.
-- **Give the dead-letter queue a consumer.** Without one, failed jobs vanish without a trace. One is
-  already wired up.
 
 ---
 
 ## Requirements
 
-- Node 22 (`nvm use 22`)
-- pnpm 9
-- A Cloudflare account (only when you deploy — local development needs nothing)
+- [Claude Code](https://claude.com/claude-code) (to use the skills; the starter works without it)
+- Node 22 and pnpm 9
+- A Cloudflare account — only when you deploy. Local development needs nothing.
+
+## Status
+
+The starter is complete and verified: it typechecks, both Workers bundle, and the full flow
+(sign-in → create → background job → download) has been run end to end. Optional modules that
+aren't built yet — extra API routes, OpenAPI docs, the marketing site — are listed in
+[ROADMAP.md](skills/new-app/ROADMAP.md), and the agent can build them on request.
 
 ## License
 
