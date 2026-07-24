@@ -1,0 +1,42 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "starterapp-queue",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-06-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+
+  // Shares the same D1 + R2 as the API worker (same names/ids).
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "starterapp",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "../api/migrations"
+    }
+  ],
+  "r2_buckets": [{ "binding": "FILES", "bucket_name": "starterapp-assets" }],
+  "send_email": [{ "name": "EMAIL" }],
+
+  "queues": {
+    // Producer so a handler can enqueue the next step.
+    "producers": [{ "binding": "JOB_QUEUE", "queue": "starterapp-jobs" }],
+    "consumers": [
+      {
+        "queue": "starterapp-jobs",
+        "max_batch_size": 1,
+        "max_retries": 3,
+        "dead_letter_queue": "starterapp-dlq"
+      },
+      // The DLQ has its own consumer (this same worker) so exhausted jobs are logged, not lost.
+      { "queue": "starterapp-dlq", "max_batch_size": 1, "max_retries": 0 }
+    ]
+  },
+
+  "vars": {
+    "ENVIRONMENT": "development",
+    "APP_URL": "http://localhost:8787",
+    "FRONTEND_URL": "http://localhost:4321",
+    "EMAIL_FROM": "notifications@example.com"
+  }
+}

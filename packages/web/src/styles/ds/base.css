@@ -1,0 +1,35 @@
+/* ============================================================
+   Base — element resets + hairline helpers.
+   Resets live in @layer base so Tailwind utilities (in @layer utilities) win the cascade.
+   Without the layer, `a { color: inherit }` overrides every text-color utility. (Tailwind v4 gotcha.)
+   ============================================================ */
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: var(--fs-body);
+    line-height: var(--lh-normal);
+    color: var(--text-primary);
+    background: var(--surface-page);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection { background: var(--ink-900); color: var(--ink-0); }
+
+  a { color: inherit; text-decoration: none; }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+/* --- Hairline helpers (borders do most of the work in this system) --- */
+.hairline { border: 1px solid var(--border-default); }
+.hairline-t { border-top: 1px solid var(--border-subtle); }
+.hairline-b { border-bottom: 1px solid var(--border-subtle); }

@@ -1,0 +1,8 @@
+---
+import AppShell from "@/layouts/AppShell.astro";
+import { NewItemForm } from "@/components/app/NewItemForm";
+---
+
+<AppShell title="New item" active="new">
+  <NewItemForm client:load />
+</AppShell>

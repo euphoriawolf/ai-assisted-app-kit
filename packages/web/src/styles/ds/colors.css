@@ -1,0 +1,62 @@
+/* ============================================================
+   2dto3D — Color
+   A strictly monochrome system. The loudest move is INVERSION:
+   ink fills on paper. Hue appears ONLY for functional status,
+   and even then it is desaturated. Never use color decoratively.
+   ============================================================ */
+:root {
+  /* --- Ink ramp (cool-neutral grayscale) --- */
+  --ink-0:   #FFFFFF;
+  --ink-50:  #F7F8F9;
+  --ink-100: #EDEEF1;
+  --ink-150: #E5E7EA;
+  --ink-200: #D9DCE0;
+  --ink-300: #C1C6CC;
+  --ink-400: #969CA5;
+  --ink-500: #6C737D;
+  --ink-600: #4E555F;
+  --ink-700: #383E47;
+  --ink-800: #23272E;
+  --ink-900: #15181C;
+  --ink-950: #0A0C0F;
+
+  /* --- Functional status (desaturated, used for state only) --- */
+  --signal-positive: #3F7D5B;   /* completed, success */
+  --signal-positive-soft: #EAF1ED;
+  --signal-critical: #B4453B;   /* failed, error, destructive */
+  --signal-critical-soft: #F7EAE9;
+  --signal-caution:  #9A7B2E;   /* warning, free-tier limit */
+  --signal-caution-soft: #F5F0E2;
+  --signal-active:   #3C5A78;   /* in-progress, processing, info */
+  --signal-active-soft: #EAEFF4;
+
+  /* --- Semantic surfaces --- */
+  --surface-page:    #FCFCFD;   /* app background (paper) */
+  --surface-card:    #FFFFFF;   /* raised card */
+  --surface-sunken:  var(--ink-50);   /* wells, inset panels */
+  --surface-muted:   var(--ink-100);  /* hover fills, chips */
+  --surface-inverse: var(--ink-950);  /* dark panels, 3D stage */
+  --surface-scrim:   rgba(10, 12, 15, 0.55); /* modal overlay */
+
+  /* --- Semantic text --- */
+  --text-primary:    var(--ink-900);
+  --text-secondary:  var(--ink-600);
+  --text-tertiary:   var(--ink-400);
+  --text-disabled:   var(--ink-300);
+  --text-inverse:    var(--ink-0);
+  --text-inverse-secondary: rgba(255, 255, 255, 0.62);
+
+  /* --- Borders (hairlines do most of the work) --- */
+  --border-subtle:   var(--ink-150);
+  --border-default:  var(--ink-200);
+  --border-strong:   var(--ink-300);
+  --border-inverse:  rgba(255, 255, 255, 0.14);
+
+  /* --- Action: black-fill primary --- */
+  --action-primary-bg:        var(--ink-950);
+  --action-primary-bg-hover:  var(--ink-800);
+  --action-primary-text:      var(--ink-0);
+
+  /* --- Focus / interaction --- */
+  --focus-ring: var(--ink-900);
+}

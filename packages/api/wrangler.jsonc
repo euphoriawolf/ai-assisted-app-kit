@@ -1,0 +1,48 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "starterapp-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-06-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "starterapp",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "migrations"
+    }
+  ],
+
+  "r2_buckets": [{ "binding": "FILES", "bucket_name": "starterapp-assets" }],
+
+  "kv_namespaces": [
+    { "binding": "SESSION_CACHE", "id": "REPLACE_WITH_KV_ID" },
+    { "binding": "RATE_LIMIT", "id": "REPLACE_WITH_KV_ID" }
+  ],
+
+  // Producer binding. The consumer worker lives in packages/queue on the same queue name.
+  "queues": {
+    "producers": [{ "binding": "JOB_QUEUE", "queue": "starterapp-jobs" }]
+  },
+
+  "analytics_engine_datasets": [{ "binding": "ANALYTICS", "dataset": "starterapp_events" }],
+
+  // Cloudflare Email Sending. The from-address (EMAIL_FROM) must be a verified sender.
+  "send_email": [{ "name": "EMAIL" }],
+
+  // Daily cron -> scheduled() -> cleanupExpiredTokens.
+  "triggers": { "crons": ["0 3 * * *"] },
+
+  "vars": {
+    "ENVIRONMENT": "development",
+    "APP_URL": "http://localhost:8787",
+    "FRONTEND_URL": "http://localhost:4321",
+    "EMAIL_FROM": "notifications@example.com",
+    "ADMIN_EMAILS": "you@example.com"
+    // Prod also sets COOKIE_DOMAIN (e.g. ".example.com") and the POLAR_PRODUCT_* ids here.
+    // Secrets (GOOGLE_*, AUTH_SECRET, POLAR_API_KEY, POLAR_WEBHOOK_SECRET) go in .dev.vars
+    // locally and `wrangler secret put` in prod — never in this file.
+  }
+}

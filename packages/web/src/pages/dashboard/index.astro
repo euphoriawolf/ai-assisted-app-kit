@@ -1,0 +1,8 @@
+---
+import AppShell from "@/layouts/AppShell.astro";
+import { Dashboard } from "@/components/app/Dashboard";
+---
+
+<AppShell title="Dashboard" active="dashboard">
+  <Dashboard client:load />
+</AppShell>

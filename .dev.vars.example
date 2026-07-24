@@ -1,0 +1,29 @@
+# Copy to packages/api/.dev.vars and fill in your values for local dev.
+
+# Auth
+GOOGLE_CLIENT_ID=...
+GOOGLE_CLIENT_SECRET=...
+AUTH_SECRET=<random 32+ char string for magic-link + session signing>
+
+# Payments — OPTIONAL. Billing is off by default (FEATURES.billing in
+# packages/shared/src/constants/features.ts). Only needed if you enable it and use the Polar
+# adapter; a different provider (Stripe/Paddle/local) uses its own vars. Sandbox values shown.
+POLAR_API_KEY=polar_oat_...
+POLAR_WEBHOOK_SECRET=polar_whs_...
+POLAR_PRODUCT_PAYG=...
+POLAR_PRODUCT_CREATOR=...
+POLAR_PRODUCT_PRO=...
+POLAR_PRODUCT_STUDIO=...
+
+# Email (Cloudflare Email Sending — the from-address MUST match the configured sender domain)
+EMAIL_FROM=notifications@example.com
+
+# Notifications (optional)
+SLACK_WEBHOOK_URL=...
+
+# App
+APP_URL=http://localhost:8787
+FRONTEND_URL=http://localhost:4321
+
+# Admin emails (comma separated)
+ADMIN_EMAILS=you@example.com

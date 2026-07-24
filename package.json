@@ -1,0 +1,24 @@
+{
+  "name": "starterapp",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev --parallel",
+    "typecheck": "turbo typecheck",
+    "lint": "turbo lint",
+    "clean": "turbo clean",
+    "db:generate": "turbo --filter=@app/db db:generate && node scripts/sync-migrations.mjs",
+    "db:migrate": "turbo --filter=@app/db db:migrate",
+    "api:dev": "turbo --filter=@app/api dev",
+    "web:dev": "turbo --filter=@app/web dev"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "tslib": "^2.8.1"
+  }
+}

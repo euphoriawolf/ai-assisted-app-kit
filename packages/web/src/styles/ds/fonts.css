@@ -1,0 +1,4 @@
+/* Webfonts — the neutral starter ships NONE (system stack, zero external requests, fast boot).
+   RESKIN SEAM: add your @font-face rules or a Google Fonts @import here, then point
+   --font-sans / --font-mono at them in typography.css and add the matching <link>/@import in
+   globals.css (must come before @import "tailwindcss"). */

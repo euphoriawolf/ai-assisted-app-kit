@@ -1,0 +1,36 @@
+---
+import "@/styles/globals.css";
+import { FEATURES } from "@app/shared/constants";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title = "Starter App", description = "A starter app built on the Cloudflare stack." } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+  <body>
+    <header class="mx-auto flex h-14 max-w-5xl items-center justify-between px-6">
+      <a href="/" class="text-base font-semibold">Starter App</a>
+      <nav class="flex items-center gap-4 text-sm">
+        {FEATURES.billing.enabled && <a href="/#pricing" class="text-text-secondary hover:text-text-primary">Pricing</a>}
+        <a href="/login" class="rounded-md bg-primary px-3 py-1.5 text-primary-foreground">Sign in</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+    <footer class="mx-auto max-w-5xl px-6 py-10 text-sm text-text-tertiary">
+      &copy; {new Date().getFullYear()} Starter App.
+    </footer>
+  </body>
+</html>

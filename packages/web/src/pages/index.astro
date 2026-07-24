@@ -1,0 +1,28 @@
+---
+import MarketingLayout from "@/layouts/MarketingLayout.astro";
+import { FEATURES } from "@app/shared/constants";
+---
+
+<MarketingLayout title="Starter App" description="A production starter on the Cloudflare stack.">
+  <section class="mx-auto max-w-5xl px-6 py-24 text-center">
+    <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">Ship your idea on the edge</h1>
+    <p class="mx-auto mt-4 max-w-xl text-lg text-text-secondary">
+      A production starter on the Cloudflare stack: sign-in, a database, background jobs, and a
+      design system. Replace the example resource and go.
+    </p>
+    <div class="mt-8 flex justify-center gap-3">
+      <a href="/login" class="rounded-md bg-primary px-5 py-2.5 text-primary-foreground">Get started</a>
+      {FEATURES.billing.enabled && <a href="#pricing" class="rounded-md border border-border px-5 py-2.5">Pricing</a>}
+    </div>
+  </section>
+
+  {/* Only advertise pricing when this app actually sells something. */}
+  {
+    FEATURES.billing.enabled && (
+      <section id="pricing" class="mx-auto max-w-5xl px-6 py-16 text-center">
+        <h2 class="text-2xl font-bold">Simple pricing</h2>
+        <p class="mt-2 text-text-secondary">Pay as you go, or grab a pack for bonus credits.</p>
+      </section>
+    )
+  }
+</MarketingLayout>

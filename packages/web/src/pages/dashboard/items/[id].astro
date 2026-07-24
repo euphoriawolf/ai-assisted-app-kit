@@ -1,0 +1,10 @@
+---
+import AppShell from "@/layouts/AppShell.astro";
+import { ItemDetail } from "@/components/app/ItemDetail";
+
+const { id } = Astro.params;
+---
+
+<AppShell title="Item" active="dashboard">
+  <ItemDetail client:load id={id!} />
+</AppShell>
